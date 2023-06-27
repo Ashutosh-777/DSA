@@ -183,8 +183,7 @@ int count_greater_than_x(TreeNode<int>* root,int x){
     }
     return count;
 }
-pair<TreeNode<int>*,int> maxChildSum
-(TreeNode<int>* root){
+pair<TreeNode<int>*,int> maxChildSum(TreeNode<int>* root){
     if(root==NULL){
         pair<TreeNode<int>*,int> b;
         b.first=NULL;
@@ -215,27 +214,16 @@ bool identical(TreeNode<int>* root1,TreeNode<int>* root2){
     if(root1==NULL&&root2==NULL){
         return true;
     }
-    if((root1!=NULL&&root2==NULL)||(root1==NULL&&root2!=NULL)){
+    if((root1==NULL||root2==NULL)){
         return false;
     }
-    bool ans =true;
+    bool ans =root1->data==root2->data;
     if(root1->children.size()!=root2->children.size()){
         return false;
     }
     for(int i=0;i<root1->children.size();i++){
-        cout<<"heheh"<<endl;
-        if(identical(root1->children[i],root2->children[i])){
-            if(ans==true){
-                ans =true;
-            }else{
-                ans = false;
-            }
-        }else{
-            ans= false;
-        }
-    }
-    if(root1->data!=root2->data && ans){
-        ans = false;
+        ans = ans&&identical(root1->children[i],root2->children[i])
+        if(ans =false) break;
     }
     return ans;
 }
