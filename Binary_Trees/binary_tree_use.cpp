@@ -107,7 +107,7 @@ int height(BinaryTreeNode<int>* root){
     if(root==NULL){
         return 0;
     }
-    return  height(root->left) > height(root->right) ? height(root->left)+1:height(root->right)+1;
+    return  1+max(height(root->left),height(root->right));
 }
 void mirror(BinaryTreeNode<int>* root){
     if(root==NULL){
@@ -180,14 +180,14 @@ BinaryTreeNode<int>* constructTreeHelper_2(int *in,int *pos,int ins,int ine,int 
             break;
         }
     }
-    int lposs=poss;
     int lins=ins;
     int line=rootindex-1;
+    int lposs=poss;
     int lpose=line-lins+lposs;
-    int rposs=lpose+1;
-    int rpose=pose-1;
     int rins=rootindex+1;
     int rine=ine;
+    int rposs=lpose+1;
+    int rpose=pose-1;
     BinaryTreeNode<int>* root =new BinaryTreeNode<int>(rootData);
     root->left=constructTreeHelper_2(in,pos,lins,line,lposs,lpose);
     root->right=constructTreeHelper_2(in,pos,rins,rine,rposs,rpose);
@@ -208,8 +208,8 @@ pair<int,int> diameter_better(BinaryTreeNode<int>* root){
         return pair<int,int>(0,0);
     }
     pair<int,int> c;
-    pair<int,int> d=diameter_better(root->left);
-    pair<int,int> e=diameter_better(root->right);
+    pair<int,int> d = diameter_better(root->left);
+    pair<int,int> e = diameter_better(root->right);
     c.first = d.first>e.first ? 1 + d.first : 1 + e.first;
     int a =d.second;
     int b =e.second;
@@ -230,8 +230,19 @@ pair<int,int> min_max(BinaryTreeNode<int>* root){
     a.first = min(l.first,min(r.first,root->data));
     a.second =max(l.second,max(root->data,r.second)) ;
     return a;
+}   
+int hasPathSum(BinaryTreeNode<int>* A, int B) {
+        if(A==NULL&&B==0) return 1;
+    if(A==NULL&&B!=0) return 0;
+    if(A->left==NULL&&A->right==NULL) return B== A->data;
+    return hasPathSum(A->left,B-A->data)||hasPathSum(A->right,B-A->data);
 }
+
 int main(){
+    BinaryTreeNode<int>* root =takeInput_LW();
+    print_LW(root);
+    cout<<diameter_better(root).second<<endl;
+    cout<<diameter(root)<<endl;
     // BST b;
     // b.insert(10);
     // b.insert(5);
@@ -242,7 +253,7 @@ int main(){
     // b.printTree();
     // b.deleteData(10);
     // b.printTree();
-    // if(b.hasData(20)) cout<<"Bella Ciao"<<endl;
+    // if(b.hasData(20)) cout<<"Bella Ciao"<<endl;   
     return 0;
 }
 // 1 2 3 4 5 6 7 -1 -1 8 9 -1 -1 -1 -1 -1 -1 -1 -1

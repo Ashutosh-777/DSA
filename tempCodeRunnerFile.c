@@ -1,52 +1,97 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
-int peakIndexInMountainArray(int a[],int n) {
-        int start = 0;
-        int end = n-1;
-        int result = -1;
-        if(n==1){
-            return 0;
-        }
-        while(start<=end){
-            int middle = start + (end-start)/2;
-            if(middle>0&&middle<n-1){
-                if(a[middle]>a[middle-1]&&a[middle]>a[middle+1]){
-                return middle;
-            }else if(a[middle]>a[middle-1]){
-                result = middle;
-                start = middle + 1;
-            }else {
-                end = middle-1;
-            }
-            }
-            if(middle == 0) {
-            if(a[middle]>a[middle+1]){
-                result =  middle;
-            }else if(a[middle]<a[middle+1]){
-                result = middle+1;
-                cout<<"hi"<<endl;
-               break;
-            }
-            }
-            if(middle == n-1 ){
-            if(a[middle]>a[middle-1]){
-                result =  middle;
-            }else if(a[middle]<a[middle-1]){
-                result = middle+1;
-               break;
-            }
-            }
-           
-        }
-        return result;
+struct Node {  
+
+    public:
+    int val;  
+    Node *left, *right, *next;
+   Node(int x) : val(x), left(NULL), right(NULL), next(NULL) {}
+};
+Node* takeInput_LW(){
+    int rootData;
+    cout<<"Enter Root Data"<<endl;
+    cin>>rootData;
+    if(rootData==-1){
+        return NULL;
     }
+    Node* root=new Node(rootData);
+    queue<Node*> pendingNodes;
+    pendingNodes.push(root);
+    while(pendingNodes.size()!=0){
+        Node* front=pendingNodes.front();
+        pendingNodes.pop();
+       int leftdata;
+       int rightdata;
+      // cout<<"Enter left child data of "<<front->data<<endl;
+       cin>>leftdata;
+       if(leftdata!=-1){
+        Node* left=new Node(leftdata);
+        front->left=left;
+        pendingNodes.push(left);
+       }
+      // cout<<"Enter right child data of "<<front->data<<endl;
+       cin>>rightdata;
+       if(rightdata!=-1){
+        Node* right=new Node(rightdata);
+        front->right=right;
+        pendingNodes.push(right);
+       }
+    }
+    return root;
+
+}
+void print_LW(Node* root){
+    if(root==NULL){
+        return;
+    }
+    queue<Node*> pendingNodes;
+    pendingNodes.push(root);
+    while(pendingNodes.size()!=0){
+        Node* front=pendingNodes.front();
+        pendingNodes.pop();
+        if(front->next) cout<<front->next->val<<" ";
+        else cout<<"NULL"<<" ";
+        cout<<endl;
+        if(front->left!=NULL){
+            pendingNodes.push(front->left);
+        }
+        if(front->right!=NULL){
+            pendingNodes.push(front->right);
+        }
+    }
+}
+
+void connect(Node* root) {
+    if(!root) return;
+    queue<Node*> q;
+    q.push(root);
+    while(q.size()!=0){
+        Node* temp = q.front();
+        q.pop();
+            int n = q.size();
+            cout<<n<<endl;
+            Node* next =  q.front();
+            if(n) {
+                n--;
+            }else{
+                cout<<"______"<<endl;
+                if(temp->left) q.push(temp->left);
+                if(temp->right) q.push(temp->right);
+            }
+            while(n--){
+                temp->next = next;
+                if(temp->left) q.push(temp->left);
+                if(temp->right) q.push(temp->right);
+                temp = next;
+                q.pop();
+                next = q.front();
+            }
+    }
+}
 int main(){
-    int n;
-    cin>>n;
-    int a[n];
-    for(int i=0;i<n;i++){
-        cin>>a[i];
-    }
-    cout<<peakIndexInMountainArray(a,n);
+    Node* root = takeInput_LW();
+    print_LW(root);
+    connect(root);
+
     return 0;
 }

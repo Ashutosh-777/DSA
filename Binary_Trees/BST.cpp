@@ -87,7 +87,6 @@ bool find_x(BinaryTreeNode<int>* root,int x){
     if(x>data){
         return find_x(root->right,x);
     }
-    
         return find_x(root->left,x);
     
 }
@@ -96,10 +95,12 @@ void elements_in_Range(BinaryTreeNode<int>* root,int k1,int k2){
         return;
     }
     if(root->data<k1){
+        //if(root->data==k1) cout<<root->data<<" ";
         elements_in_Range(root->right,k1,k2);
     }else
     if(root->data>k2){
         elements_in_Range(root->left,k1,k2);
+        //cout<<root->data<<" ";
     }else{
         elements_in_Range(root->left,k1,k2);
         cout<<root->data<<" ";
@@ -189,7 +190,7 @@ bool isBST3(BinaryTreeNode<int>* root,int min =INT_MIN,int max =  INT_MAX){
     if(root->data<min||root->data>max){
         return false;
     }
-    bool l = isBST3(root->left,min,root->data-1);
+    bool l = isBST3(root->left,min,root->data);
     bool r = isBST3(root->right,root->data,max);
     return l&&r;
 }
@@ -282,16 +283,20 @@ vector<int>* path_BT(BinaryTreeNode<int>* root,int x){
 }
 int main(){
     BinaryTreeNode<int>* root = takeInput_LW();
-    vector<int>* v;
-    int x;
-    cin>>x;
-    v = path_BT(root,x);
-    for(int i=0;i < v->size();i++){
-        cout<<v->at(i)<<" ";
-    }
-    cout<<endl;
+    elements_in_Range(root,2,6);
+    if(isBST3(root)) cout<<"True"<<endl;
+    else cout<<"False"<<endl;
+    // vector<int>* v;
+    // int x;
+    // cin>>x;
+    // v = path_BT(root,x);
+    // for(int i=0;i < v->size();i++){
+    //     cout<<v->at(i)<<" ";
+    // }
+    // cout<<endl;
     return 0;
 }
 // 1 2 3 4 5 6 7 -1 -1 8 9 -1 -1 -1 -1 -1 -1 -1 -1
 //BST
-//4 2 6 1 3 5 7 -1 -1 -1 -1 -1 -1 -1 -1
+// 4 2 6 1 3 5 7 -1 -1 -1 -1 -1 -1 -1 -1
+//1 0 3 -1 -1 2 6 -1 -1 5 -1 4 -1 -1 -1

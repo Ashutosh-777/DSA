@@ -36,6 +36,7 @@ class Solution {
                 }
             }
         }
+        //first time i missed thios part where you have to return -1 when you can't find the distance
         if(dist[v]==INT_MAX) return {-1};
         stack<int> s;
         s.push(v);
