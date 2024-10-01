@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 int main(){
-    cout<<(-3%3)<<endl;
+    int mask = 0;
+    cout<<(mask&(1<<2))<<endl;
  return 0;
 }
