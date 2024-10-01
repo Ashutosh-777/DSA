@@ -9,7 +9,7 @@ using namespace std;
 
 class Solution {
   private:
-  void bfs(int sr,int sc,vector<vector<int>>& grid,vector<vector<int>>& vis,vector<pair<int,int>> &vec){
+  void bfs(int sr,int sc,vector<vector<char>>& grid,vector<vector<int>>& vis,vector<pair<int,int>> &vec){
       int m =grid.size();
       int n = grid[0].size();
       int delrow[]={-1,0,0,1};
@@ -23,7 +23,7 @@ class Solution {
           for(int i=0;i<4;i++){
             int nrow = ans.first + delrow[i];
             int ncol = ans.second + delcol[i];
-            if(nrow>=0&&nrow<m&&ncol>=0&&ncol<n&&grid[nrow][ncol]==1&&!vis[nrow][ncol]){
+            if(nrow>=0&&nrow<m&&ncol>=0&&ncol<n&&grid[nrow][ncol]=='X'&&!vis[nrow][ncol]){
                 vis[nrow][ncol]=1;
                 q.push({nrow,ncol});
                 vec.push_back({nrow-sr,ncol-sc});
@@ -32,14 +32,14 @@ class Solution {
       }
   }
   public:
-    int countDistinctIslands(vector<vector<int>>& grid) {
+    int countDistinctIslands(vector<vector<char>>& grid) {
     int m = grid.size();
     int n = grid[0].size();
     vector<vector<int>> vis(m,vector<int>(n,0));
     set<vector<pair<int,int>>> s;
     for(int i=0;i<m;i++){
         for(int j=0;j<n;j++){
-            if(grid[i][j]==1&&vis[i][j]==0){
+            if(grid[i][j]=='X'&&vis[i][j]==0){
                 vector<pair<int,int>> vec;
                 bfs(i,j,grid,vis,vec);
                 s.insert(vec);
@@ -56,12 +56,12 @@ class Solution {
 
 int main() {
 
-    int t;
-    cin >> t;
+    int t=1;
+    //cin >> t;
     while (t--) {
         int n, m;
         cin >> n >> m;
-        vector<vector<int>> grid(n, vector<int>(m));
+        vector<vector<char>> grid(n, vector<char>(m));
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 cin >> grid[i][j];

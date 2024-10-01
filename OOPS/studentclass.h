@@ -35,7 +35,7 @@ class Student{
         return age;
     }
     ~Student(){
-        //cout<<this<<endl;
+
         cout<<"Destructor called \n ";
     }
 };

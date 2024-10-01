@@ -1,0 +1,87 @@
+import sys
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLineEdit, QGraphicsView, QGraphicsScene, QGraphicsEllipseItem, QGraphicsTextItem
+
+
+class Node:
+    def _init_(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+class BinarySearchTree:
+    def _init_(self):
+        self.root = None
+
+    def insert(self, value):
+        if not self.root:
+            self.root = Node(value)
+        else:
+            self._insert_recursive(self.root, value)
+
+    def _insert_recursive(self, node, value):
+        if value < node.value:
+            if node.left is None:
+                node.left = Node(value)
+            else:
+                self._insert_recursive(node.left, value)
+        elif value > node.value:
+            if node.right is None:
+                node.right = Node(value)
+            else:
+                self._insert_recursive(node.right, value)
+
+
+class BSTApp(QMainWindow):
+    def _init_(self):
+        super()._init_()
+
+        self.setWindowTitle("Binary Search Tree")
+        self.setGeometry(100, 100, 800, 600)
+
+        self.tree = BinarySearchTree()
+
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+
+        self.layout = QVBoxLayout()
+        self.central_widget.setLayout(self.layout)
+
+        self.input_box = QLineEdit()
+        self.layout.addWidget(self.input_box)
+
+        self.add_button = QPushButton("Add to Tree")
+        self.add_button.clicked.connect(self.add_to_tree)
+        self.layout.addWidget(self.add_button)
+
+        self.graphics_view = QGraphicsView()
+        self.scene = QGraphicsScene()
+        self.graphics_view.setScene(self.scene)
+        self.layout.addWidget(self.graphics_view)
+
+    def add_to_tree(self):
+        value = int(self.input_box.text())
+        self.tree.insert(value)
+        self.draw_tree(self.tree.root, 400, 50, 200)
+
+    def draw_tree(self, node, x, y, spacing):
+        if node is not None:
+            ellipse = QGraphicsEllipseItem(x, y, 50, 50)
+            self.scene.addItem(ellipse)
+            text = QGraphicsTextItem(str(node.value))
+            text.setPos(x + 10, y + 15)
+            self.scene.addItem(text)
+
+            if node.left is not None:
+                self.scene.addLine(x + 25, y + 50, x - spacing + 25, y + 100)
+                self.draw_tree(node.left, x - spacing, y + 100, spacing / 2)
+
+            if node.right is not None:
+                self.scene.addLine(x + 25, y + 50, x + spacing + 25, y + 100)
+                self.draw_tree(node.right, x + spacing, y + 100, spacing / 2)
+
+
+if __name__ == "_main_":
+    app = QApplication(sys.argv)
+    window = BSTApp()
+    window.show()
+    sys.exit(app.exec())

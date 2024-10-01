@@ -25,7 +25,6 @@ TreeNode<int>* takeInput_LW(){
         }
     }
     return root;
-
 }
 //printing tree level wise
 void printTree_LW(TreeNode<int>* root){
@@ -143,9 +142,6 @@ int nextLarger_2(TreeNode<int>* root,int x){
         ans = min(temp,ans);
     }
     return ans;
-}
-int secondLargest(TreeNode<int>* root){
-    return -1;
 }
 void replaceWithDepth(TreeNode<int>* root,int x){
     if(root==NULL){

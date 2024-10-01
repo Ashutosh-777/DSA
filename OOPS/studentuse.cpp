@@ -23,6 +23,9 @@ int main(){
     //COPY CONSTRUCTORS 
     Student s7(s3);
     Student s8(*s6);
+    Student *s15(&s3);
+    s15->display();
+    cout<<"Hello"<<endl;
     Student *s9 = new Student(*s6);
     Student *s10 = new Student(s3);
     s3.display();
@@ -34,8 +37,8 @@ int main(){
     //COPY ASSIGNMENT OPERATORS
     Student s11 = s3;
     Student s12 = *s6;
+    Student *s13 = &s3;
     //s13  throws error because of type mismatch you
-    //Student *s13 = s3;
     Student *s14= s6;
     cout<<"\n \n \n ";
     s3.display();

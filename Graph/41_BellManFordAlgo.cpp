@@ -1,17 +1,8 @@
 //{ Driver Code Starts
 #include <bits/stdc++.h>
-using namespace std;
-
-// } Driver Code Ends
-// User function Template for C++
-
+using namespace std
 class Solution {
   public:
-    /*  Function to implement Bellman Ford
-    *   edges: vector of vectors which represents the graph
-    *   S: source vertex to start traversing graph with
-    *   V: number of vertices
-    */
     vector<int> bellman_ford(int v, vector<vector<int>>& edges, int src) {
         vector<int> dist(v,1e8);
         int n = v;

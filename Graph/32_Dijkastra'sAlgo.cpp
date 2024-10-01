@@ -31,29 +31,29 @@ class Solution
           return dist;
     }
     //using set
-//  vector <int> dijkstra(int v, vector<vector<int>> adj[], int src)
-//     {
-//         set<pair<int,int>> st;
-//         st.insert({0,src});
-//         vector<int> dist(v,INT_MAX);
-//         dist[src] = 0;
-//         while(!st.empty()){
-//             auto it = *(st.begin()); 
-//             int node = it.second; 
-//             int dis = it.first; 
-//             st.erase(it); 
-//             for(auto it: adj[node]){
-//                 int wt = it[1];
-//                 int adjNode = it[0];
-//                 if(dist[adjNode]>wt+dis){
-//                     if(dist[adjNode]!=INT_MAX) st.erase({dist[adjNode],adjNode});
-//                     dist[adjNode] = wt+dis;
-//                     st.insert({dist[adjNode],adjNode});
-//                 }
-//             }
-//         }
-//         return dist;
-//     }
+ vector <int> dijkstra(int v, vector<vector<int>> adj[], int src)
+    {
+        set<pair<int,int>> st;
+        st.insert({0,src});
+        vector<int> dist(v,INT_MAX);
+        dist[src] = 0;
+        while(!st.empty()){
+            auto it = *(st.begin()); 
+            int node = it.second; 
+            int dis = it.first; 
+            st.erase(it); 
+            for(auto it: adj[node]){
+                int wt = it[1];
+                int adjNode = it[0];
+                if(dist[adjNode]>wt+dis){
+                    if(dist[adjNode]!=INT_MAX) st.erase({dist[adjNode],adjNode});
+                    dist[adjNode] = wt+dis;
+                    st.insert({dist[adjNode],adjNode});
+                }
+            }
+        }
+        return dist;
+    }
 };
 
 

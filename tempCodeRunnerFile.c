@@ -1,97 +1,84 @@
 #include <bits/stdc++.h>
 using namespace std;
-struct Node {  
-
+#include <bits/stdc++.h>
+class Node{
     public:
-    int val;  
-    Node *left, *right, *next;
-   Node(int x) : val(x), left(NULL), right(NULL), next(NULL) {}
+    char data;
+    Node* children[26];
+    bool isTerminal;
+    Node(char data='\0'){
+        this->data = data;
+        for(int i=0;i<26;i++){
+            children[i]=NULL;
+        }
+    }
 };
-Node* takeInput_LW(){
-    int rootData;
-    cout<<"Enter Root Data"<<endl;
-    cin>>rootData;
-    if(rootData==-1){
-        return NULL;
-    }
-    Node* root=new Node(rootData);
-    queue<Node*> pendingNodes;
-    pendingNodes.push(root);
-    while(pendingNodes.size()!=0){
-        Node* front=pendingNodes.front();
-        pendingNodes.pop();
-       int leftdata;
-       int rightdata;
-      // cout<<"Enter left child data of "<<front->data<<endl;
-       cin>>leftdata;
-       if(leftdata!=-1){
-        Node* left=new Node(leftdata);
-        front->left=left;
-        pendingNodes.push(left);
-       }
-      // cout<<"Enter right child data of "<<front->data<<endl;
-       cin>>rightdata;
-       if(rightdata!=-1){
-        Node* right=new Node(rightdata);
-        front->right=right;
-        pendingNodes.push(right);
-       }
-    }
-    return root;
 
-}
-void print_LW(Node* root){
-    if(root==NULL){
+class Trie {
+    Node *root;
+    public:
+    Trie(){
+        root =   new Node('\0');
+    }
+    void insert(string word){
+        Node* prev=  root;
+        for(auto ch:word){
+            int ind = ch-'a';
+            if(prev->children[ind]!=NULL){
+                prev = prev->children[ind];
+            }else{
+                Node *child = new Node(ch);
+                prev = child;
+            }
+        }
+        prev->isTerminal = true;
+    }
+    bool search(string word){
+        Node *prev = root;
+        for(auto ch:word){
+            int ind = ch-'a';
+            if(prev->children[ind]==NULL){
+                return false;
+            }else{
+                prev = prev->children[ind];
+            }
+        }
+        return prev->isTerminal;
+    }
+    void remove(string word){
+        Node *prev = root;
+        for(auto ch:word){
+            int ind = ch-'a';
+            if(prev->children[ind]==NULL){
+                return;
+            }else{
+                prev = prev->children[ind];
+            }
+        }
+        prev->isTerminal = false;
         return;
     }
-    queue<Node*> pendingNodes;
-    pendingNodes.push(root);
-    while(pendingNodes.size()!=0){
-        Node* front=pendingNodes.front();
-        pendingNodes.pop();
-        if(front->next) cout<<front->next->val<<" ";
-        else cout<<"NULL"<<" ";
-        cout<<endl;
-        if(front->left!=NULL){
-            pendingNodes.push(front->left);
-        }
-        if(front->right!=NULL){
-            pendingNodes.push(front->right);
-        }
-    }
-}
-
-void connect(Node* root) {
-    if(!root) return;
-    queue<Node*> q;
-    q.push(root);
-    while(q.size()!=0){
-        Node* temp = q.front();
-        q.pop();
-            int n = q.size();
-            cout<<n<<endl;
-            Node* next =  q.front();
-            if(n) {
-                n--;
+    bool startsWith(string word){
+        Node *prev = root;
+        for(auto ch:word){
+            int ind = ch-'a';
+            if(prev->children[ind]){
+                prev = prev->children[ind];
             }else{
-                cout<<"______"<<endl;
-                if(temp->left) q.push(temp->left);
-                if(temp->right) q.push(temp->right);
+                return false;
             }
-            while(n--){
-                temp->next = next;
-                if(temp->left) q.push(temp->left);
-                if(temp->right) q.push(temp->right);
-                temp = next;
-                q.pop();
-                next = q.front();
-            }
+        }
+        return true;
     }
-}
-int main(){
-    Node* root = takeInput_LW();
-    print_LW(root);
-    connect(root);
+    /** Inserts a word into the trie. */
 
-    return 0;
+    /** Returns if the word is in the trie. */
+
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+};
+int main(){
+    Trie tr;
+    tr.insert("abcd");
+    cout<<tr.search("abcd")<<"   "<<tr.startsWith("abc")<<endl;
+ return 0;
 }
