@@ -1,87 +1,116 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLineEdit, QGraphicsView, QGraphicsScene, QGraphicsEllipseItem, QGraphicsTextItem
+def format_amount_currency(amount, currency):
+    try:
+        amount = float(amount)
+    except ValueError:
+        return None  # Invalid amount
+
+    divide_by_100_currencies = {"EUR", "USD", "SGD", "BRL"}
+    multiply_by_1_currencies = {"JPY", "ISK", "KRW"}
+
+    if currency in divide_by_100_currencies:
+        amount = amount / 100
+    elif currency in multiply_by_1_currencies:
+        amount = amount * 1
+    else:
+        return None  # Invalid currency
+
+    return f"{amount:.2f}{currency}"
 
 
-class Node:
-    def _init_(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
+def is_valid_row(amount, currency, evidence_due_by):
+    valid_currencies = {"EUR", "USD", "SGD", "BRL", "JPY", "ISK", "KRW"}
+    if currency not in valid_currencies:
+        return False
+    if not amount.isdigit():
+        return False
+    if not evidence_due_by.isdigit():
+        return False
+    return True
 
-class BinarySearchTree:
-    def _init_(self):
-        self.root = None
 
-    def insert(self, value):
-        if not self.root:
-            self.root = Node(value)
+def parseNetworkChargebackInfo(rows):
+    parsed_data = []
+    header_mapping = {}
+    current_bank = ""
+    current_file_date = ""  # Store the current file's date
+    txn_data = {}  # To store transactions and their status
+
+    for row in rows:
+        if ".csv" in row:  # Extract the bank name and file date from the file name
+            current_bank = row.split('_')[0]  # Bank name (e.g., "VISA")
+            current_file_date = row.split('_')[1].replace('.csv', '')  # File date (e.g., "20230602")
+            continue
+        elif 'transaction' in row.lower():  # Map headers dynamically
+            headers = row.lower().split(',')
+            for idx, column in enumerate(headers):
+                header_mapping[column.strip()] = idx
+            continue
         else:
-            self._insert_recursive(self.root, value)
+            # Extract transaction details dynamically
+            transaction_data = row.split(',')
 
-    def _insert_recursive(self, node, value):
-        if value < node.value:
-            if node.left is None:
-                node.left = Node(value)
-            else:
-                self._insert_recursive(node.left, value)
-        elif value > node.value:
-            if node.right is None:
-                node.right = Node(value)
-            else:
-                self._insert_recursive(node.right, value)
+            if len(transaction_data) >= len(header_mapping):
+                txn_id = transaction_data[header_mapping.get('transaction')].strip() if 'transaction' in header_mapping else ''
+                merchant_id = transaction_data[header_mapping.get('merchant')].strip() if 'merchant' in header_mapping else ''
+                amount = transaction_data[header_mapping.get('amount')].strip() if 'amount' in header_mapping else ''
+                currency = transaction_data[header_mapping.get('currency')].strip() if 'currency' in header_mapping else ''
+                evidence_due_by = transaction_data[header_mapping.get('evidence_due_by')].strip() if 'evidence_due_by' in header_mapping else ''
+                reason = transaction_data[header_mapping.get('reason')].strip().lower() if 'reason' in header_mapping else ''
 
+                # Validate the row
+                if not is_valid_row(amount, currency, evidence_due_by):
+                    continue  # Ignore invalid rows
 
-class BSTApp(QMainWindow):
-    def _init_(self):
-        super()._init_()
+                # Full transaction ID with bank name and date (to track by file)
+                full_txn_id = f"{current_bank}_{txn_id}"
+                
+                # Track transactions that are not marked as "withdrawn"
+                if reason != 'withdrawn':
+                    txn_data[full_txn_id] = {
+                        'merchant_id': merchant_id,
+                        'amount_with_currency': format_amount_currency(amount, currency),
+                        'evidence_due_by': evidence_due_by,
+                        'is_withdrawn': False,
+                        'file_date': current_file_date  # Track the file date
+                    }
+                else:
+                    # Handle 'withdrawn' rows
+                    if full_txn_id in txn_data:
+                        # Withdraw the row only if the withdrawal is from a later file
+                        if txn_data[full_txn_id]['file_date'] < current_file_date:
+                            txn_data[full_txn_id]['is_withdrawn'] = True
 
-        self.setWindowTitle("Binary Search Tree")
-        self.setGeometry(100, 100, 800, 600)
+    # Prepare the final parsed data, excluding withdrawn transactions
+    for txn_id, txn_info in txn_data.items():
+        if not txn_info['is_withdrawn']:  # Only include non-withdrawn rows
+            parsed_data.append(f"{txn_id},{txn_info['merchant_id']},{txn_info['amount_with_currency']},{txn_info['evidence_due_by']}")
 
-        self.tree = BinarySearchTree()
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-
-        self.layout = QVBoxLayout()
-        self.central_widget.setLayout(self.layout)
-
-        self.input_box = QLineEdit()
-        self.layout.addWidget(self.input_box)
-
-        self.add_button = QPushButton("Add to Tree")
-        self.add_button.clicked.connect(self.add_to_tree)
-        self.layout.addWidget(self.add_button)
-
-        self.graphics_view = QGraphicsView()
-        self.scene = QGraphicsScene()
-        self.graphics_view.setScene(self.scene)
-        self.layout.addWidget(self.graphics_view)
-
-    def add_to_tree(self):
-        value = int(self.input_box.text())
-        self.tree.insert(value)
-        self.draw_tree(self.tree.root, 400, 50, 200)
-
-    def draw_tree(self, node, x, y, spacing):
-        if node is not None:
-            ellipse = QGraphicsEllipseItem(x, y, 50, 50)
-            self.scene.addItem(ellipse)
-            text = QGraphicsTextItem(str(node.value))
-            text.setPos(x + 10, y + 15)
-            self.scene.addItem(text)
-
-            if node.left is not None:
-                self.scene.addLine(x + 25, y + 50, x - spacing + 25, y + 100)
-                self.draw_tree(node.left, x - spacing, y + 100, spacing / 2)
-
-            if node.right is not None:
-                self.scene.addLine(x + 25, y + 50, x + spacing + 25, y + 100)
-                self.draw_tree(node.right, x + spacing, y + 100, spacing / 2)
+    return "\n".join(parsed_data)
 
 
-if __name__ == "_main_":
-    app = QApplication(sys.argv)
-    window = BSTApp()
-    window.show()
-    sys.exit(app.exec())
+def main():
+    # Example input rows with some transactions marked as "withdrawn"
+    rows = [
+        "VISA_20230602.csv",
+        "transaction,merchant,amount,currency,evidence_due_by,reason",
+        "123890132,47821,37906,USD,1686812400,fraudulent",   # Valid row
+        "110450953,63724,12750,JPY,1686898800,duplicate",    # Valid row
+        "MASTERCARD_20230601.csv",
+        "transaction,merchant,currency,amount,evidence_due_by,reason",
+        "110450953,63724,JPY,12750,1686898800,withdrawn",    # Withdrawn in a different file, should remove both
+        "VISA_20230603.csv",
+        "transaction,merchant,amount,currency,evidence_due_by,reason",
+        "123890132,47821,37906,USD,1686812400,withdrawn",    # Withdrawn in a later file, should remove both rows with txn_id=123890132
+    ]
+
+    # Parse the network chargeback info
+    parsed_info = parseNetworkChargebackInfo(rows)
+
+    # Print the parsed data
+    print("Parsed Network Chargeback Information:")
+    print(parsed_info)
+
+
+# Run the main function when the script is executed
+if __name__ == "__main__":
+    main()
