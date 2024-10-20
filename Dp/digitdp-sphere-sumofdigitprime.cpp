@@ -31,7 +31,7 @@ int main(){
         memset(prime,1,sizeof(prime));
         prime[0]=0;
         prime[1]=0;
-        for(int i=2;i<200;i++){
+        for(int i=2;i*i<200;i++){
             if(prime[i]){
                 int j = i*i;
                 while(j<200){

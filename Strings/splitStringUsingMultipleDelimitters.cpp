@@ -8,7 +8,7 @@ vector<string> split(const string& s, const string& delimiters) {
     size_t end = s.find_first_of(delimiters);
 
     while (end != string::npos) {
-        if (end != start) {  // Avoid adding empty tokens (when delimiters are next to each other)
+        if (end != start) {  //in order to  Avoid adding empty tokens (when delimiters are next to each other)
             tokens.push_back(s.substr(start, end - start));
         }
         start = end + 1;
